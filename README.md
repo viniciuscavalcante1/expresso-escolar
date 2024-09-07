@@ -21,7 +21,7 @@
 1. Clone o repositório:
 
    ```bash
-   git clone https://github.com/SEU_USUARIO/expresso-escolar.git
+   git clone https://github.com/viniciuscavalcante1/expresso-escolar.git
    cd expresso-escolar
    ```
 
