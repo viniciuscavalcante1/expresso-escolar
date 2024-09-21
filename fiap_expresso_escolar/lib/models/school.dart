@@ -1,8 +1,10 @@
-import 'package:latlong2/latlong.dart'; // Importando LatLng para o modelo
+// models/school.dart
+
+import 'package:latlong2/latlong.dart';
 
 class School {
   final String name;
-  final LatLng location; // Usando LatLng ao invés de String
+  final LatLng location;
 
   School(this.name, this.location);
 }

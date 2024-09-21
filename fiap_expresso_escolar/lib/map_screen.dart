@@ -1,34 +1,46 @@
+// map_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
 
-// tela de mapa que exibe a localização do motorista
 class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  late LatLng driverLocation; // armazena a localização atual do motorista
-  Timer? timer; // timer para simular movimento
+  late LatLng driverLocation;
+  Timer? timer;
+  late MapController _mapController;
+
+  @override
+  void initState() {
+    super.initState();
+    _mapController = MapController();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    driverLocation = ModalRoute.of(context)!.settings.arguments as LatLng; // pega a localização passada pela rota
+    driverLocation = ModalRoute.of(context)!.settings.arguments as LatLng;
 
-    // simula o movimento do motorista, atualizando a posição a cada 2 segundos
+    // simula o movimento do motorista
     timer = Timer.periodic(Duration(seconds: 2), (Timer t) {
       setState(() {
-        driverLocation = LatLng(driverLocation.latitude + 0.001, driverLocation.longitude + 0.001);
+        driverLocation = LatLng(
+          driverLocation.latitude + 0.0001,
+          driverLocation.longitude + 0.0001,
+        );
+        _mapController.move(driverLocation, _mapController.zoom);
       });
     });
   }
 
   @override
   void dispose() {
-    timer?.cancel(); // cancela o timer ao sair da tela
+    timer?.cancel();
     super.dispose();
   }
 
@@ -40,24 +52,37 @@ class _MapScreenState extends State<MapScreen> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: FlutterMap(
+        mapController: _mapController,
         options: MapOptions(
-          center: driverLocation, // define a localização inicial do mapa
-          zoom: 14.0,
+          center: driverLocation,
+          zoom: 15.0,
         ),
         children: [
           TileLayer(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c'],
+            urlTemplate:
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            subdomains: const ['a', 'b', 'c'],
           ),
           MarkerLayer(
             markers: [
               Marker(
-                point: driverLocation, // exibe o marcador na localização atual
-                builder: (ctx) => Icon(Icons.directions_bus, color: Colors.amber, size: 40), // ícone do ônibus
+                point: driverLocation,
+                builder: (ctx) => Icon(
+                  Icons.directions_bus,
+                  color: Colors.amber,
+                  size: 40,
+                ),
               ),
             ],
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/rating');
+        },
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(Icons.rate_review),
       ),
     );
   }
